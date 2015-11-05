@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+NAME="unbound-dns64"
+IMAGE_NAME=yokogawa/${NAME}
+if [ "${1}" = "unbound-control" ]; then
+    :
+else
+    docker ps --quiet --all --filter name=${NAME} | xargs -r docker rm >/dev/null
+fi
+
+set -x
+if [ "${1}" = "bash" ]; then
+    docker run -it --name=${NAME} ${IMAGE_NAME} $@
+elif [ "${1}" = "unbound-control" ]; then
+    docker exec -it ${NAME} $@
+else
+    docker run -d --name=${NAME} ${IMAGE_NAME} $@
+fi
+
